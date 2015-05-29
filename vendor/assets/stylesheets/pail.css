@@ -1,0 +1,11 @@
+//= require twitter/bootstrap
+.progress{
+  margin-bottom:10px;
+}
+.progress-bar{
+  text-align:left;
+}
+.file-info{
+  display:inline-block;
+  padding-left:10px;
+}
