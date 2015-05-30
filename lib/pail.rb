@@ -2,6 +2,31 @@ require "pail/version"
 require "pail/engine"
 
 module Pail
+  class Generate
+    def self.signature(secret_access_key, policy)
+      Base64.encode64(
+        OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('sha1'), secret_access_key, policy)
+      ).gsub("\n","")
+    end
+
+    def self.policy(bucket, expiration_date, acl, max_filesize)
+      Base64.encode64(
+        "{'expiration': '#{expiration_date}',
+          'conditions': [
+            {'bucket': '#{bucket}'},
+            {'acl': '#{acl}'},
+            {'success_action_status': '201'},
+            ['content-length-range', 0, #{max_filesize}],
+            ['starts-with', '$key', ''],
+            ['starts-with', '$Content-Type', ''],
+            ['starts-with', '$name', ''],
+            ['starts-with', '$Filename', '']
+          ]
+        }"
+      ).gsub(/\n|\r/, '')
+    end
+  end
+
   module PailHelper
     def pail(options = {})   
        # Read in the default bucket, AWS key and secret from environment variables.
@@ -22,21 +47,15 @@ module Pail
 
        id = options[:id] ? "_#{options[:id]}" : ''
 
-       policy = Base64.encode64(
-         "{'expiration': '#{options[:expiration_date]}',
-           'conditions': [
-             {'bucket': '#{bucket}'},
-             {'acl': '#{options[:acl]}'},
-             {'success_action_status': '201'},
-             ['content-length-range', 0, #{options[:max_filesize]}],
-             ['starts-with', '$key', ''],
-             ['starts-with', '$Content-Type', ''],
-             ['starts-with', '$name', ''],
-             ['starts-with', '$Filename', '']
-           ]
-           }").gsub(/\n|\r/, '')
+       policy = Pail::Generate::policy(
+        bucket,
+        options[:expiration_date], 
+        options[:acl], 
+        options[:max_filesize]
+      )
 
-       signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('sha1'),secret_access_key, policy)).gsub("\n","")
+       signature = Pail::Generate::signature(secret_access_key, policy)
+
        out = ""
        filters = "filters : [
          {title : '#{options[:filter_title]}', extensions : '#{options[:filter_extentions]}'}
