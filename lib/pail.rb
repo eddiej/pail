@@ -42,6 +42,8 @@ module Pail
        options[:filter_title] ||= 'Images'
        options[:filter_extentions] ||= 'jpg,jpeg,gif,png,bmp'
        options[:runtimes] ||= 'html5'
+       
+       options[:selectid] ||= 'selectfile'
        options[:cancelid] ||= 'resetupload'
        options[:progress_bar_class] ||= 'progress-bar progress-bar-striped active'
 
@@ -70,7 +72,7 @@ module Pail
        out << javascript_tag(<<JAVASCRIPT
        
        uploader = new plupload.Uploader({
-           browse_button : 'selectfile',
+           browse_button : '#{options[:selectid]}',
            container : 'uploadcontainer',
            runtimes : '#{options[:runtimes]}',
            url : 'https://s3.amazonaws.com/#{bucket}/',
