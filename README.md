@@ -1,10 +1,11 @@
 # Pail
 
-Pail is a Ruby gem that makes it easy to upload files directly to an Amazon S3 Bucket, bypassing your application server. 
+Pail is a Ruby gem that makes it easy to upload files directly from your views to an Amazon S3 Bucket, bypassing your application server. 
 
 ![Alt Image Text](https://raw.githubusercontent.com/eddiej/pail/gh-pages/in_progress.png "Optional Title")
 
-It uses the Plupload JavaScript uploader originally written for PHP, bundling the required Javascript libraries with convenience methods for generating the policy document and SHA1 signature needed to upload to S3. Pail has the option of applying Twitter Boostrap progress-bar styling to the uploader, but it is unstyled by default.
+It uses the Plupload JavaScript uploader originally written for PHP, bundling the required Javascript libraries with convenience methods for generating the policy document and SHA1 signature needed to upload to S3. 
+Pail has the option of applying Twitter Boostrap progress-bar styling to the uploader, but it is unstyled by default.
 
 
 ## Why Do I Need It?
