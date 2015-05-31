@@ -205,5 +205,9 @@ The default Pail events can be removed using the `unbind` function, e.g:
 </script>
 ```
 
+## Testing
+The tests for the gem are written in Rspec:
+
+    bundle exec rspec spec
 
  

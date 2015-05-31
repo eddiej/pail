@@ -5,7 +5,7 @@ module Pail
   class Generate
     def self.signature(secret_access_key, policy)
       Base64.encode64(
-        OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('sha1'), secret_access_key, policy)
+        OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha1'), secret_access_key, policy)
       ).gsub("\n","")
     end
 
