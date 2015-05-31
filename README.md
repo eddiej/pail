@@ -6,9 +6,11 @@ It uses the Plupload JavaScript uploader originally written for PHP, bundling th
 
 ## Why Do I Need It?
 
-There are two approaches to processing and storing file uploads from your Rails app to S3: direct uploading and pass-through uploading.
+There are two approaches to processing and storing file uploads from your Rails app to S3: pass-through uploading and direct uploading. 
 
-**Pass-through uploading**, which sends files to your Rails application before uploading them from there to S3 storage, is easy to implement -it can be done using just a simple form - but your application's server threads will be tied up during the upload process which can have a blocking affect on your application. If all of the available threads of your server are occupied by slow uploads, your application will become unavailable until one of the uploads finishes and frees up a thread. Some hosting providers like Heroku terminate requests that last longer than 30 seconds, so uploads that take any longer won't complete.
+**Pass-through uploading**, which sends files to your Rails application before uploading them from there to S3 storage, is easy to implement, but your application's server threads will be tied up during the upload process which can have a blocking affect on your application. 
+
+If all of the available threads of your server are occupied by slow uploads, your application will become unavailable until one of the uploads finishes and frees up a thread. Some hosting providers like Heroku terminate requests that last longer than 30 seconds, so uploads that take any longer won't complete.
 
 **Direct uploading** makes a direct connection between the end-user's browser and S3, so it doesn't touch your application at all. This will greatly reduce the processing required by your application and keep your threads free for other requests, but it can be complicated to implement. See [Heroku's Guide for direct uploading to S3 with Rails](https://devcenter.heroku.com/articles/direct-to-s3-image-uploads-in-rails) to see just how complicated.
 
@@ -129,13 +131,17 @@ The upload progress bar itself is the same as that used by [Twitter Bootstap pro
 The control buttons and progress bar will be unstyled by default, but you can apply the Boostrap styles by including the Pail stylesheet from application.css:
 
 ```css
-*= include pail.css
+*
+*= require_tree .
+*= require_self
+*= require pail
+*/ 
 ```
 
 If you already use Twitter Bootstrap in your application, the styles from your theme will automatically be applied.
 The resulting uploader will look like this once a file has been selected:
 
-`![Alt Image Text](path/or/url/to.jpg "Optional Title")`
+`![Alt Image Text](./in_progress.png "Optional Title")`
 
 
 ## Upload Events
