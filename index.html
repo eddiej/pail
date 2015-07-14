@@ -24,7 +24,7 @@
     <section class="main-content">
       
 <h2>The Uploader</h2>
-<p>The uploader had been configured to enable .jpg and .jpeg files only with a maximum filesize of 100KB. Because this is a simple html demo (the policy and signature used must be generated on the fly from a backend), the uploader will return a HTTP error. </p>
+<p>This uploader instance had been configured to accept .jpg and .jpeg files only, with a maximum filesize of 100KB. The key (destination folder in the bucket) has been set as <em>my_special_case</em>. </p>
 
 
 
@@ -158,7 +158,7 @@
 <script>
   window.uploader.bind('FileUploaded', function(up, file, info) { 
     var location = $($.parseXML(info.response)).find('Location').text()
-    $('#uploadcontainer').find('#info').html('Woot! Your file has been uploaded to <a href="' + location + '">'+ unescape(location) +'</a>.')
+    $('#uploadcontainer').find('#info').html('Woot! Your file was uploaded to <a href="' + location + '">'+ unescape(location) +'</a>.')
   })
 
   window.uploader.unbind('Error')
@@ -174,7 +174,8 @@
 <h2>The Code</h2>
 <p>The uploader above would be generated from your a Rails view using the following code:</p>
 <code>
-&lt;div&nbsp;id='uploadcontainer'&gt;
+&lt;!-- Markup required to render an uploader --&gt;
+<br>&lt;div&nbsp;id='uploadcontainer'&gt;
 <br>&nbsp;&lt;h3&gt;Select&nbsp;A&nbsp;File&lt;/h3&gt;
 <br>&nbsp;&lt;div&nbsp;id='uploadfile'&gt;&nbsp;
 <br>&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class=&quot;progress&quot;&gt;&lt;/div&gt;
@@ -185,16 +186,17 @@
 <br>&nbsp;&lt;/p&gt;
 <br>&lt;/div&gt;
 
-<br /><br />
-&lt;%= pail({key: 'my_special_place', max_filesize: 102400, filter_title: 'Jpg Files', filter_extensions: 'jpg,jpeg'}) %&gt;
-<br /><br />
+<br /><br /><br />
+&lt;!-- The pail Rails helper method, turns the markup above into an uploader isntance --&gt;
+<br /><strong>&lt;%= pail({key: 'my_special_place', max_filesize: 102400, filter_title: 'Jpg Files', filter_extensions: 'jpg,jpeg'}) %&gt;</strong>
+<br /><br /><br />
 
-&lt;script&gt;
+&lt;!-- Custom actions that bind to the FileUpload and Error events --&gt;
+<br />&lt;script&gt;
 <br>&nbsp;&nbsp;window.uploader.bind('FileUploaded',&nbsp;function(up,&nbsp;file,&nbsp;info)&nbsp;{&nbsp;
 <br>&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;location&nbsp;=&nbsp;$($.parseXML(info.response)).find('Location').text()
 <br>&nbsp;&nbsp;&nbsp;&nbsp;$('#uploadcontainer').find('#info').html('Woot!&nbsp;Your&nbsp;file&nbsp;has&nbsp;been&nbsp;uploaded&nbsp;to&nbsp;&lt;a&nbsp;href=&quot;'&nbsp;+&nbsp;location&nbsp;+&nbsp;'&quot;&gt;'+&nbsp;unescape(location)&nbsp;+'&lt;/a&gt;.')
 <br>&nbsp;&nbsp;})
-<br>
 <br>&nbsp;&nbsp;window.uploader.unbind('Error')
 <br>&nbsp;&nbsp;window.uploader.bind('Error',&nbsp;function(up,&nbsp;err)&nbsp;{
 <br>&nbsp;&nbsp;&nbsp;&nbsp;$('#uploadcontainer').find('#info').html(&quot;Oops!&nbsp;Attempting&nbsp;to&nbsp;upload&nbsp;&lt;strong&gt;&quot;&nbsp;+&nbsp;err.file.name&nbsp;+&nbsp;&quot;&lt;/strong&gt;&nbsp;resulted&nbsp;in&nbsp;a&nbsp;&quot;&nbsp;+&nbsp;err.message);
