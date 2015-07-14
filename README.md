@@ -210,8 +210,9 @@ The default Pail events can be removed using the `unbind` function, e.g:
 ```
 
 ## Testing
-The tests for the gem are written in Rspec:
+Tests are written using RSpec. To start the test suite, run:
 
-    bundle exec rspec spec
-
- 
+```rails
+bundle exec rspec
+```
+or view the tests and results output on [Travis CI](https://travis-ci.org/eddiej/pail). 
