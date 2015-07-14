@@ -1,5 +1,9 @@
 # Pail
 
+[![Build Status](https://travis-ci.org/eddiej/pail.png?branch=master)](https://travis-ci.org/eddiej/pail) 
+[![Coverage Status](https://coveralls.io/repos/eddiej/pail/badge.png)](https://coveralls.io/r/eddiej/pail)
+
+
 Pail is a Ruby gem that makes it easy to upload files directly from your views to an Amazon S3 Bucket, bypassing your application server. 
 
 ![Alt Image Text](https://raw.githubusercontent.com/eddiej/pail/gh-pages/in_progress.png "Optional Title")
