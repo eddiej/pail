@@ -28,77 +28,82 @@ module Pail
   end
 
   module PailHelper
+    
     def pail(options = {})   
-       # Read in the default bucket, AWS key and secret from environment variables.
-       bucket = ENV['S3_BUCKET']
-       access_key_id = ENV['AWS_ACCESS_KEY_ID']
-       secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
-       
-       options[:key] ||= 'uploads' # folder on AWS to store file in
-       options[:acl] ||= 'public-read'
-       options[:expiration_date] ||= 10.hours.from_now.utc.iso8601
-       options[:max_filesize] ||= 500.megabytes
-       options[:content_type] ||= 'image/' # Videos would be binary/octet-stream
-       options[:filter_title] ||= 'Images'
-       options[:filter_extensions] ||= 'jpg,jpeg,gif,png,bmp'
-       options[:runtimes] ||= 'html5'
-       
-       options[:selectid] ||= 'selectfile'
-       options[:cancelid] ||= 'resetupload'
-       options[:progress_bar_class] ||= 'progress-bar progress-bar-striped active'
+      # Read in the default bucket, AWS key and secret from environment variables.
+ 
+      @bucket = ENV['S3_BUCKET']
+      @access_key_id = ENV['AWS_ACCESS_KEY_ID']
+      @secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+      @options = options.dup
 
-       id = options[:id] ? "_#{options[:id]}" : ''
+      raise ArgumentError.new('a bucket, access key id and secret access key must be set') unless @bucket && @access_key_id && @secret_access_key
 
-       policy = Pail::Generate::policy(
-        bucket,
-        options[:expiration_date], 
-        options[:acl], 
-        options[:max_filesize]
+      @options[:key] ||= 'uploads' # folder on AWS to store file in
+      @options[:acl] ||= 'public-read'
+      @options[:expiration_date] ||= 10.hours.from_now.utc.iso8601
+      @options[:max_filesize] ||= 104857600 # 100.megabytes
+      @options[:content_type] ||= 'image/' # Videos would be binary/octet-stream
+      @options[:filter_title] ||= 'Images'
+      @options[:filter_extensions] ||= 'jpg,jpeg,gif,png,bmp'
+      @options[:runtimes] ||= 'html5'
+
+      @options[:selectid] ||= 'selectfile'
+      @options[:cancelid] ||= 'resetupload'
+      @options[:progress_bar_class] ||= 'progress-bar progress-bar-striped active'
+
+      id = @options[:id] ? "_#{@options[:id]}" : ''
+
+      policy = Pail::Generate::policy(
+        @bucket,
+        @options[:expiration_date], 
+        @options[:acl], 
+        @options[:max_filesize]
       )
 
-       signature = Pail::Generate::signature(secret_access_key, policy)
+      signature = Pail::Generate::signature(@secret_access_key, policy)
 
-       out = ""
-       filters = "filters : [
-         {title : '#{options[:filter_title]}', extensions : '#{options[:filter_extensions]}'}
-       ],"
-       if options[:filters]
-         filters = 'filters : ['
-         filters = filters + options[:filters].join(',')
-         filters = filters + "],"
-       end
+      out = ""
+      filters = "filters : [
+       {title : '#{@options[:filter_title]}', extensions : '#{@options[:filter_extensions]}'}
+      ],"
+      if @options[:filters]
+        filters = 'filters : ['
+        filters = filters + @options[:filters].join(',')
+        filters = filters + "],"
+      end
 
 
-       out << javascript_tag(<<JAVASCRIPT
+      out << javascript_tag(<<JAVASCRIPT
        
-       uploader = new plupload.Uploader({
-           browse_button : '#{options[:selectid]}',
-           container : 'uploadcontainer',
-           runtimes : '#{options[:runtimes]}',
-           url : 'https://s3.amazonaws.com/#{bucket}/',
-           max_file_size : '#{number_to_human_size(options[:max_filesize]).gsub(/ /,'').downcase}',
-           multipart: true,
-           multipart_params: {
-             'key': '#{options[:key]}/${filename}',
-             'Filename': '${filename}', // adding this to keep consistency across the runtimes
-             'acl': '#{options[:acl]}',
-             'Content-Type': '#{options[:content_type]}',
-             'success_action_status': '201',
-             'AWSAccessKeyId' : '#{access_key_id}',
-             'policy': '#{policy}',
-             'signature': '#{signature}'
-           },
-           // optional, but better be specified directly
-           file_data_name: 'file',
-           // re-use widget (not related to S3, but to Plupload UI Widget)
-           multiple_queues: true,
-           // Specify what files to browse for
-           #{filters}
-           // Flash settings
-           flash_swf_url : '/assets/plupload/Moxie.swf',
-           // Silverlight settings
-           silverlight_xap_url : '/assets/plupload/Moxie.xap',
-         });
+        uploader = new plupload.Uploader({
+          browse_button : '#{@options[:selectid]}',
+          container : 'uploadcontainer',
+          runtimes : '#{@options[:runtimes]}',
+          url : 'https://s3.amazonaws.com/#{@bucket}/',
+          max_file_size : '#{number_to_human_size(@options[:max_filesize]).gsub(/ /,'').downcase}',
+          multipart: true,
+          multipart_params: {
+            'key': '#{@options[:key]}/${filename}',
+            'Filename': '${filename}', // adding this to keep consistency across the runtimes
+            'acl': '#{@options[:acl]}',
+            'Content-Type': '#{@options[:content_type]}',
+            'success_action_status': '201',
+            'AWSAccessKeyId' : '#{@access_key_id}',
+            'policy': '#{policy}',
+            'signature': '#{signature}'
+          },
+          // optional, but better be specified directly
+          file_data_name: 'file',
+          // re-use widget (not related to S3, but to Plupload UI Widget)
+          multiple_queues: true,
+          // Specify what files to browse for
+          #{filters}
+          // Flash settings
+          flash_swf_url : '/assets/plupload/Moxie.swf',
+          // Silverlight settings
+          silverlight_xap_url : '/assets/plupload/Moxie.xap',
+        });
 
         placeholder = $('#uploadfile').children().first();
         uploader.init() 
@@ -109,12 +114,12 @@ module Pail
           $.each(files, function(i, file) {
             $('#uploadfile').empty().append(' \
               <div id="' + file.id + '" class="progress"> \
-                <div class="#{options[:progress_bar_class]}" role="progressbar" aria-valuenow="'+file.percent+'" aria-valuemin="0" aria-valuemax="100"> \
+                <div class="#{@options[:progress_bar_class]}" role="progressbar" aria-valuenow="'+file.percent+'" aria-valuemin="0" aria-valuemax="100"> \
                   <span class="file-info">' + file.name + ' (' + plupload.formatSize(file.size) + ')</span>' +
                 '</div> \
               </div>');
           });
-          $('##{options[:cancelid]}').removeClass('disabled')
+          $('##{@options[:cancelid]}').removeClass('disabled')
 
 
             
@@ -169,10 +174,10 @@ module Pail
         });
 
         // 5. Stop button is clicked.
-        $('#uploadcontainer').on('click', '##{options[:cancelid]}', function(){
+        $('#uploadcontainer').on('click', '##{@options[:cancelid]}', function(){
           uploader.stop();
           $('#uploadfile').html(placeholder);
-          $('##{options[:cancelid]}').addClass('disabled')
+          $('##{@options[:cancelid]}').addClass('disabled')
           $('#' + file.id + " .progress-bar")
             .removeClass('active')
           uploader.refresh(); // Reposition Flash/Silverlight

@@ -1,9 +1,12 @@
-require 'rails/all'
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
 require 'coveralls'
 Coveralls.wear!
 
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'rails'
+require 'action_view'
+require 'action_controller'
+require 'rspec/rails'
 require 'pail'
 
 RSpec.configure do |config|
