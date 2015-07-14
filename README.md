@@ -30,7 +30,7 @@ Before you can upload to S3, you'll need to:
 - generate a Base64 encoded Policy document
 - generate a Base64 encoded SHA1 encrypted signature
 
-Your S3 bucket needs to be created and configured manually, but Pail looks after the the policy document and signature generation. Pail needs access to three variables; the name of the bucket you'll be uploading to, an AWS access key id and secret access key. These should be made available as environrment variables in your Rails app: 
+Your S3 bucket needs to be created and configured manually, but Pail looks after the the policy document and signature generation. Pail needs access to three variables; the name of the bucket you'll be uploading to, an AWS access key id and secret access key. These should be made available as environrment variables in your Rails app. There are various wasy of doing this, you could use an initializer or a gem like [dotenv](https://github.com/bkeepers/dotenv).
 
 ```ruby
 ENV['S3_BUCKET']=assets.mydomain.com

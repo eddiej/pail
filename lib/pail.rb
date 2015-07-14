@@ -34,13 +34,13 @@ module Pail
        access_key_id = ENV['AWS_ACCESS_KEY_ID']
        secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
        
-       options[:key] ||= 'test' # folder on AWS to store file in
+       options[:key] ||= 'uploads' # folder on AWS to store file in
        options[:acl] ||= 'public-read'
        options[:expiration_date] ||= 10.hours.from_now.utc.iso8601
        options[:max_filesize] ||= 500.megabytes
        options[:content_type] ||= 'image/' # Videos would be binary/octet-stream
        options[:filter_title] ||= 'Images'
-       options[:filter_extentions] ||= 'jpg,jpeg,gif,png,bmp'
+       options[:filter_extensions] ||= 'jpg,jpeg,gif,png,bmp'
        options[:runtimes] ||= 'html5'
        
        options[:selectid] ||= 'selectfile'
@@ -60,7 +60,7 @@ module Pail
 
        out = ""
        filters = "filters : [
-         {title : '#{options[:filter_title]}', extensions : '#{options[:filter_extentions]}'}
+         {title : '#{options[:filter_title]}', extensions : '#{options[:filter_extensions]}'}
        ],"
        if options[:filters]
          filters = 'filters : ['
@@ -148,13 +148,20 @@ module Pail
         });
 
         // 3. Error Occurs
-        uploader.bind('Error', function(up, err) {    
-          $('#filelist').find('.file-info').html("Error: " + err.code + ", " + err.message + (err.file ? ", File: " + err.file.name : ""));
-          $('#' + file.id + " .progress-bar")
+        uploader.bind('Error', function(up, err) {  
+          if($('.file-info').length > 0){
+            error_element = $('.file-info')
+          }
+          else{
+            error_element = $('.progress')
+          }
+          error_element.html("Error: " + err.code + ", " + err.message + (err.file ? " File: " + err.file.name : ""));
+          $('#' + err.file.id + " .progress-bar")
             .addClass('progress-bar-danger')
             .removeClass('active')
         });
 
+        // 4. File is Uploaded
         uploader.bind('FileUploaded', function(up, file) {
           $('#' + file.id + " .progress-bar")
             .addClass('progress-bar-success')
